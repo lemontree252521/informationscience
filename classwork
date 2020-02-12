@@ -1,0 +1,126 @@
+from bs4 import BeautifulSoup
+import requests
+import re
+
+url = "http://www.aviationweather.gov/adds/dataserver_" \
+      "current/httpparam?dataSource=metars&requestType=" \
+      "retrieve&format=csv&stationString=RJOO&hoursBeforeNow=" \
+      "36&mostRecentForEachStation=constraint"
+
+res = requests.get(url)
+soup = BeautifulSoup(res.text, "html.parser")
+print(soup.prettify())
+list_ = ""
+list_ = list_.join(soup.string)
+
+
+# m = re.search("([0-9][0-9][0-9][0-9][0-9][0-9]Z)", list_).group(1)
+# print(m[0:2] + " day at " + m[2:4] + ":" + m[4:6] + " hours")
+list2 = list_.split()
+list3 = re.split('[ ]|[,]|[\n]', list_)
+print(list2)
+print(list3)
+
+for i in list3:
+    if re.search("([0-9][0-9][0-9][0-9][0-9][0-9]Z)", i):
+        n = re.search("([0-9][0-9][0-9][0-9][0-9][0-9]Z)", i).group(1)
+        print(n[0:2]+" day at " + n[2:4]+":" + n[4:6] + " hours")
+
+    if re.search("([0-9][0-9][0-9][0-9][0-9]KT)", i):
+        n = re.search("([0-9][0-9][0-9][0-9][0-9]KT)", i).group(1)
+        print("wind " + n[0:3] + " at " + n[3:5] + " kts")
+
+    if re.search("(VRB[0-9][0-9]KT)", i):
+        n = re.search("(VRB[0-9][0-9]KT)", i).group(1)
+        print("wind variable at " + n[3:5] + " kts")
+
+    if re.search("([0-9][0-9][0-9]V[0-9][0-9][0-9])", i):
+        n = re.search("([0-9][0-9][0-9]V[0-9][0-9][0-9])", i).group(1)
+        print("wind varying fromt " + n[0:3] + " to "+n[4:8])
+
+    if re.search("([0-9][0-9]/[0-9][0-9])", i):
+        n = re.search("([0-9][0-9]/[0-9][0-9])", i).group(1)
+        print("temperature " + n[0:2] + " dew point " + n[3:5])
+
+    if re.search("(M[0-9][0-9]M[0-9][0-9])", i):
+        n = re.match("(M[0-9][0-9]M[0-9][0-9])", i).group(1)
+        print("temperature -" + n[1:3] + " dew point -" + n[4:6])
+
+    if re.search("(9999)", i):
+        n = re.search("(9999)", i).group(1)
+        print("visibility unlimited")
+
+    if i == "([0-9][0-9][0-9][0-9])" and i != "9999":
+        n = re.search("([0-9][0-9][0-9][0-9])", i).group(1)
+        print("visibility " + n + " m")
+
+    if re.search("(CAVOK)", i):
+        n = re.search("(CAVOK)", i).group(1)
+        print("ceiling/visibility OK")
+
+    if re.search("(SKC)", i):
+        n = re.search("(SKC)", i).group(1)
+        print("sky clear")
+
+    if re.search("(CLR)", i):
+        n = re.search("(CLR)", i).group(1)
+        print("sky clear below 12,000 feet ")
+
+    if re.search("(OVC)", i):
+        n = re.search("(OVC)", i).group(1)
+        print("sky overcast")
+
+    if re.search("(FEW[0-9][0-9][0-9])", i):
+        n = re.search("(FEW[0-9][0-9][0-9])", i).group(1)
+        print("few clouds at " + n[3:6] + "00 feet")
+
+    if re.search("(SCT[0-9][0-9][0-9])", i):
+        n = re.search("(SCT[0-9][0-9][0-9])", i).group(1)
+        print("scattered clouds at " + n[3:6] + "00 feet")
+
+    if re.search("(BKN[0-9][0-9][0-9])", i):
+        n = re.search("(BKN[0-9][0-9][0-9])", i).group(1)
+        print("broken clouds at " + n[3:6] + "00 feet")
+
+    if re.search("(Q[0-9][0-9][0-9][0-9])", i):
+        n = re.search("(Q[0-9][0-9][0-9])", i).group(1)
+        print("pressure " + n[1:3] + " mbar")
+
+    if re.search("(A[0-9][0-9][0-9][0-9])", i):
+        n = re.search("(A[0-9][0-9][0-9])", i).group(1)
+        print("pressure " + n[1:3] + " inHg")
+
+
+
+
+
+
+# i1 = re.search(r"(\d{1,2}\d{4}\wZ)", list_).group()
+# list2 += i1
+#
+# i2 = re.search(r"(\d{3}\d{2}\wKT)", list_).group()
+# list2 += i2
+
+
+# print(list2)
+# i3 = re.search(r"(\wVRB\d{2}\wKT)",soup.string)
+# i4 = re.search(r"(\d{3}\wV\d{3})",soup.string)
+# i5 = re.search(r"(\d{3}\d{2}\wKT)",soup.string)
+
+
+
+# m = re.search(r"(\d{2}\d{4}\wZ)", list_)
+#
+#
+# print(m.groups())
+
+
+# i = re.findall(r"\d{1,2}\d{4}\wZ")
+# print(i)
+
+# reg = re.compile(r'(?P<word>\b\w+)\s+(?P=word)')
+# regMatch = reg.match(list_)
+# linebits = regMatch.groupdict()
+# print(linebits)
+# for k, v in linebits.items() :
+#     print(k+": "+v)
