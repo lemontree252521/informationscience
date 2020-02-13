@@ -1,0 +1,33 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+url = 'https://www.aviationweather.gov/adds/dataserver_current/current/metars.cache.csv'
+data = pd.read_csv(url, skiprows=5)
+df = data.loc[:, ['station_id', 'latitude', 'longitude', 'temp_c', 'dewpoint_c']]
+print(df)
+
+for index, row in df.iterrows():
+    if(row['station_id'].startswith('RJ') or row['station_id'].startswith('RO')):
+
+        if row['temp_c'] < 16:
+            col = '#01386a'
+        elif row['temp_c'] < 18:
+            col = '#75bbfd'
+        elif row['temp_c'] < 20:
+            col = '#d1d1fc'
+        elif row['temp_c'] < 22:
+            col = '#01a049'
+        elif row['temp_c'] < 24:
+            col = '#adf802'
+        elif row['temp_c'] < 26:
+            col = '#ffad01'
+        elif row['temp_c'] < 28:
+            col = '#fd4aae'
+        elif row['temp_c'] < 30:
+            col = '#d9544d'
+        else:
+            col = '#840000'
+        plt.plot(row['longitude'], row['latitude'], "o", color=col, markersize=row['temp_c'], alpha=0.5)
+        plt.text(row['longitude']-0.7, row['latitude'], row['station_id'], va='center')
+
+plt.show()
